@@ -195,7 +195,7 @@ def cond_list(inp_list, cond_list, mode):
 def load_list(inp_list):
 #=======================================================================================
     """
-    This function takes an input list of file names and loads them into a list
+    This function takes an input a list of file names and loads them into a list
     
     Inputs:
         inp_list (list of strings): input list of files names
@@ -225,7 +225,7 @@ def save_shared_files(path, son_path, mode):
     Inputs:
     path (string): name of parent path
     son_path (string): name of code folder 
-    mode (string): define which file to save: 'admin' or 'criticality'
+    mode (string): define which file to save: 'admin', criticality' or 'lce'
     
     """
 
@@ -249,10 +249,15 @@ def save_shared_files(path, son_path, mode):
         path_list = os.listdir(path) #get names of all directories
 
 
-    elif mode == 'criticality':
-        file_list = [return_files(path , son_path, 'avalanches.py')[0], return_files(path , son_path, 'IS.py')[0]]  #search for admin file in current directory
-        path_list = ['criticality', 'spiking_network_criticality', 'zebrafish_mutant_analysis'] #CHANGE AS NEEDED!
+    if mode == 'criticality':
+        file_list = [return_files(path , son_path, 'criticality.py')[0], return_files(path , son_path, 'IS.py')[0], return_files(path, son_path, 'trace_analyse.py')[0]]  #search for admin file in current directory
+        path_list = ['criticality', 'avalanche_model', 'mutant_analysis'] #CHANGE AS NEEDED!
 
+    if mode == 'lce':
+        file_list = return_files(path , son_path, 'LCE.py' ) #search for LCE file in current directory
+        path_list = ['empirical_dynamic_modelling', 'seizure_dynamics'] #CHANGE AS NEEDED!
+        
+        
     loop_dir(file_list, path_list) 
 
 
@@ -511,16 +516,30 @@ def stats_2samp(data1, data2, alpha, n_comp, mode):
             
         print('t = ' + str(t) +  '   p = ' + str(p))
 
-
+#=======================================================================
+def mean_distribution(distlist): #Generate mean distribution 
+#=======================================================================
+    import numpy as np
+    comb_vec = []
+    for i in range(len(distlist)):
+        comb_vec = np.append(comb_vec, distlist[i])
+    av = np.unique(comb_vec, return_counts=True)[0]
+    freq = (np.unique(comb_vec, return_counts=True)[1]).astype(int)//len(distlist)
+    mean_vec = []
+    for e in range(freq.shape[0]):
+        mean_vec = np.append(mean_vec, np.full(freq[e],av[e]))
+    return(mean_vec)
+        
+        
 #PLOT
 #=============================
 #=============================
 
 #=======================================================================================
-def multi_plot(data_list, col_list, plot_type, size, rows, cols, mode): 
+def multi_plot(data_list, col_list, plot_type, size, rows, cols): 
 #=======================================================================================
     """
-    Matplotlib confuses me - this function allows me to build a subplot frame without having to remember how to use matplotlib. This function allows a single plot per frame. 
+    Matplotlib confuses me - this function allows me to build a subplot frame without having to remember how to use matplotlib. 
     
     Inputs:
     data_list(list): list of data to plot, must match the method type
@@ -528,8 +547,7 @@ def multi_plot(data_list, col_list, plot_type, size, rows, cols, mode):
     size (tuple): fig size
     rows (int): number of rows
     cols (int): number of columns
-    col_list (list): list of colors for plotting - must be ordered according to data_list. i.e. if there are 20 plots, you need a list of 20 colours. 
-    mode (str): 'linear' or 'logarithmic'
+    col_list (list): list of colors for plotting
 
     """
     from matplotlib import pyplot as plt
@@ -538,70 +556,10 @@ def multi_plot(data_list, col_list, plot_type, size, rows, cols, mode):
     
     for i in range(len(data_list)):
         plt.subplot(rows, cols, i + 1)
-        if len (data_list[i]) > 1:
-            plot = getattr(plt, plot_type)(data_list[i][0], data_list[i][1], color = col_list[i]) 
-        else:
-            plot = getattr(plt, plot_type)(data_list[i], color = col_list[i])
-            
-        if mode == 'log':
-            plt.yscale('log')
-            plt.xscale('log')
+        plot = getattr(plt, plot_type)(data_list[i], color = col_list[i]) 
     plt.show()
         
         
-#=======================================================================================
-def multi_plot_share(data_list, col_list, plot_type, size, rows, cols, mode): 
-#=======================================================================================
-    """
-    Matplotlib confuses me - this function allows me to build a subplot frame without having to remember how to use matplotlib. This functions allows multiple plots per frame. 
-    
-    Inputs:
-    data_list(list of list): list of data to plot, must match the method type
-    col_list (list): list of colors for plotting. Must be ordered according to list of list in data_list. i.e. if there are 3 groups per plot, you need a list of 3 colours. 
-    plot_type (str): must be a method available to plot
-    size (tuple): fig size
-    rows (int): number of rows
-    cols (int): number of columns
-    mode (str): 'linear' or 'logarithmic'
-
-    """
-    from matplotlib import pyplot as plt
-    import numpy as np
-    
-    #Check that all lists are the same length
-    def check_samelength(data_list):
-        lens = []
-        for i in range(len(data_list)):
-            count=0
-            for e in range(len(data_list[i])):
-                count+=1
-            lens.extend([count])
-        return(lens)
-
-    list_lengths = check_samelength(data_list)
-    if len(np.unique(list_lengths)) != 1:
-        print('Lists must all be of equal length')
-        
-    
-    plt.figure(figsize = size)
-    
-    for e in range(len(data_list[0])):
-        plt.subplot(rows, cols, e + 1)
-        for i in range(len(data_list)):
-            
-            #If data_list takes multiple entries, split up
-            if type(data_list[i][e]) == list:
-                plot = getattr(plt, plot_type)(data_list[i][e][0], data_list[i][e][1], color = col_list[i])
-
-            #else provide singular entry to plotting function
-            else:
-                plot = getattr(plt, plot_type)(data_list[i][e], bins = 50, color = col_list[i])
-
-            if mode == 'log':
-                plt.yscale('log')
-                plt.xscale('log')
-    plt.show()
-
 #=======================================================================================     
 def bar_scatter_plot(dic, data_name, fig_size, bar_size, dot_size, mean_colours, colours):
 #=======================================================================================

@@ -13,6 +13,10 @@ def affprop(data):
         sub_c (np array): 1d vector of all unique cluster labels, that label more than a single time point
 
     """
+    from sklearn.cluster import AffinityPropagation
+    import numpy as np
+    
+    
     cluster = AffinityPropagation(damping = 0.5, max_iter = 200, convergence_iter = 15).fit(data)
     unq,counts = np.unique(cluster.labels_, return_counts = True)
     all_c = cluster.labels_
@@ -33,7 +37,8 @@ def Similarity(curr_clust):
         mean_sim (float): the mean similarity
 
     """
-
+    import numpy as np
+    
     ijdot = np.inner(curr_clust, curr_clust)
     self_dot = np.apply_along_axis(np.max,0,ijdot)
     idot = np.reshape(np.repeat(self_dot, ijdot.shape[0]), ijdot.shape)
@@ -59,6 +64,8 @@ def Sim_loop(data, all_clust, sub_clust):
         sim_list (list): list of all similarities for each cluster
 
     """
+    import numpy as np
+    
     sim_list = list(range(len(sub_clust)))
     
     #Loop through all clusters with more than 1 member
@@ -86,6 +93,7 @@ def state_stats(fin_clust, all_clust):
     """
 
     import more_itertools as mit
+    import numpy as np
 
     p_state, m_dwell = np.zeros(len(fin_clust)),np.zeros(len(fin_clust)) 
     
@@ -123,6 +131,7 @@ def null_states(fin_clust, data):
 
     import random
     import more_itertools as mit
+    import numpy as np
 
     all_states = np.arange(1,len(fin_clust)+1)
     rand_states = np.array(random.choices(all_states, k = data.shape[0]))

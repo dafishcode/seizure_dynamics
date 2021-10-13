@@ -95,6 +95,8 @@ def nonlinembed(data):
     X_transformed = embedding.fit_transform(data)
     return(X_transformed)
 
+
+
 #======================================================================================
 def state_dist(data):
 #======================================================================================
@@ -109,6 +111,56 @@ def state_dist(data):
     """
     import numpy as np
     dist = np.zeros((data.shape[1])-1)
-    for i in range(dist.shape[0]): 
-        dist[i] = np.linalg.norm(data[:,i] - data[:,i+1])#euclidean distance distribution
+    for i in range(dist.shape[0]):
+        data_t0 = data[:,i]/np.linalg.norm(data[:,i])
+        data_t1 = data[:,i+1]/np.linalg.norm(data[:,i+1])
+        
+        dist[i] = np.linalg.norm(data_t0 - data_t1)#euclidean distance distribution
     return(dist)
+
+
+#find PCs
+#===================================
+def PC1(input_data, n_components):
+#====================================
+
+    """
+    This function finds the first PC of the data
+    
+    Inputs:
+        input_data (np array): cells x timepoints
+        n_components (int): number of components to perform decomposition with
+        
+    Returns:
+        output_data (np array): 1d vector of loadings over time for first PC
+    
+    """
+    from sklearn import decomposition
+
+    pca = decomposition.PCA(n_components)
+    fit = pca.fit(input_data)
+    output_data = fit.components_[0]
+    return(output_data)
+
+#find PCs
+#===================================
+def PC(input_data, n_components):
+#====================================
+
+    """
+    This function finds the first n PCs
+    
+    Inputs:
+        input_data (np array): cells x timepoints
+        n_components (int): number of components to perform decomposition with
+        
+    Returns:
+        output_data (np array): PC loading x time 
+    
+    """
+    from sklearn import decomposition
+
+    pca = decomposition.PCA(n_components)
+    fit = pca.fit(input_data)
+    output_data = fit.components_
+    return(output_data)
