@@ -1,13 +1,28 @@
-# pathological_dynamics_sz
-Repo for analysing and modelling pathological dynamics in seizures - using dimensionality, stability and manifold analysis. 
+# seizure_dynamics
+Repo for calculating eigenspectra, population smoothness and velocity in spontaneous dynamics.
 
-'dimensionality' - analysing the dimensionality of dynamics using PCA
+## What is this repo for?
+* the analysis of seizure dynamics using dimensionality reduction and simulations
+* the visualisation of state trajectories 
+* the analysis of metastable dynamics
 
-'net_dyn' - network simulations looking at the effect of network topology on dynamic range
 
-'net_state' - manifold learning to identify the topology of spontaneous vs focal vs generalised seizure dynamics - plans to use persistent homology - work in progress!
+## What does this repo contain?
+* Modules contain functions for the analysis and simulation of eigenpectra and metastability
+* Accompanying ipynotebooks demonstrate how to use the modules
 
-'stability' - evaluating the stability of dynamics and smoothness of manifold in spontaneous vs focal vs generalised seizure dynamics
+### Modules
+'admin_functions.py' - useful administrative functions useful 
 
-'state_space_sim' - simulate the link between eigenspectrum dimensionality and manifold smoothness
+'dynamics.py' - calculates eigenspectra in empirical data and simulates eigenspectra power laws
 
+'LCE.py' - functions for performing lagged coordinate embedding
+
+'metastability.py' - functions for calculating the number of metastable states and state transition dynamics
+
+
+### Notebooks
+
+'eigenspectra.ipynb' - calculates eigenspectra in empirical data and simulates eigenspectra power laws
+
+'metastability.ipynb' - calculating the number of metastable states and state transition dynamics
