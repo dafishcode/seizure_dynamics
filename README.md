@@ -26,3 +26,5 @@ Repo for calculating eigenspectra, population smoothness and velocity in spontan
 'eigenspectra.ipynb' - calculates eigenspectra in empirical data and simulates eigenspectra power laws
 
 'metastability.ipynb' - calculating the number of metastable states and state transition dynamics
+
+'dimensionality.ipynb' - calculating the dimensionality of population dynamics in seizure network models, and visualising dimensionality measures using simulations. 
